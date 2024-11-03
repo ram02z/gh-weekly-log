@@ -1,4 +1,4 @@
-package client
+package api
 
 import "github.com/cli/go-gh/v2/pkg/api"
 

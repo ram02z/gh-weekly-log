@@ -1,15 +1,16 @@
-package client
+package api
 
 import (
 	"context"
+	"fmt"
+	"github.com/ram02z/gh-weekly-log/api/schema"
 	"net/http"
 	"time"
 
 	"github.com/cli/go-gh/v2/pkg/api"
-	"github.com/ram02z/gh-weekly-log/schema"
 )
 
-// IssueClient represents client to issues REST API endpoints
+// IssueClient represents api to issues REST API endpoints
 // See https://docs.github.com/en/rest/issues/issues?apiVersion=2022-11-28
 type IssueClient client
 
@@ -66,4 +67,19 @@ func (c *IssueClient) List(ctx context.Context, opts *IssueListOptions) ([]schem
 	}
 
 	return issues, nil
+}
+
+type ListTimelineEventsOptions ListOptions
+
+// ListTimelineEvents gets timeline events for an issue
+// TODO: Add support for pagination
+func (c *IssueClient) ListTimelineEvents(ctx context.Context, owner, repo string, issueNumber int, opts *ListTimelineEventsOptions) ([]schema.Timeline, error) {
+	m := fmt.Sprintf("repos/%s/%s/issues/%d/timeline", owner, repo, issueNumber)
+	var events []schema.Timeline
+	err := c.client.DoWithContext(ctx, http.MethodGet, m, nil, &events)
+	if err != nil {
+		return nil, err
+	}
+
+	return events, nil
 }

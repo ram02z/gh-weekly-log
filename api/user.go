@@ -1,13 +1,15 @@
-package client
+package api
 
 import (
 	"context"
+	"github.com/ram02z/gh-weekly-log/api/schema"
 	"net/http"
 
 	"github.com/cli/go-gh/v2/pkg/api"
-	"github.com/ram02z/gh-weekly-log/schema"
 )
 
+// UserClient represents api to users REST API endpoints
+// See https://docs.github.com/en/rest/users/users?apiVersion=2022-11-28
 type UserClient client
 
 func DefaultUserClient() (*UserClient, error) {
