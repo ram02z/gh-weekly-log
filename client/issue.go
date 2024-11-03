@@ -56,7 +56,6 @@ type IssueListOptions struct {
 // List gets all issues for authenticated user
 func (c *IssueClient) List(ctx context.Context, opts *IssueListOptions) ([]schema.Issue, error) {
 	m, err := addOptions(c.method, opts)
-	println(m)
 	if err != nil {
 		return nil, err
 	}

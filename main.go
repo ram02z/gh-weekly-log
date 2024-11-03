@@ -31,7 +31,7 @@ func main() {
 	params := client.IssueListOptions{
 		Filter: "assigned",
 		State:  "all",
-		Since:  time.Now().AddDate(-1, 0, 0),
+		Since:  startOfWeek(time.Now()),
 	}
 	issues, err := issueClient.List(ctx, &params)
 	if err != nil {
@@ -47,4 +47,26 @@ func main() {
 			issue.User.Login,
 		)
 	}
+}
+
+// StartOfWeek returns the start (Monday) of the week containing t.
+// The time returned is midnight (00:00:00) UTC.
+func startOfWeek(t time.Time) time.Time {
+	t = t.UTC()
+
+	daysFromMonday := int(t.Weekday())
+	if daysFromMonday == 0 {
+		daysFromMonday = 7
+	}
+	daysFromMonday--
+
+	monday := t.AddDate(0, 0, -daysFromMonday)
+
+	return time.Date(
+		monday.Year(),
+		monday.Month(),
+		monday.Day(),
+		0, 0, 0, 0,
+		time.UTC,
+	)
 }
