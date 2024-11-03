@@ -1,26 +1,50 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"time"
 
-	"github.com/cli/go-gh/v2/pkg/api"
+	"github.com/ram02z/gh-weekly-log/client"
 )
 
 func main() {
-	fmt.Println("hi world, this is the gh-WEEK_LOG extension!")
-	client, err := api.DefaultRESTClient()
+	ctx := context.Background()
+	userClient, err := client.DefaultUserClient()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	response := struct {Login string}{}
-	err = client.Get("user", &response)
+	user, err := userClient.Get(ctx)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Printf("running as %s\n", response.Login)
-}
+	fmt.Printf("running as %s\n", user.Login)
 
-// For more examples of using go-gh, see:
-// https://github.com/cli/go-gh/blob/trunk/example_gh_test.go
+	issueClient, err := client.DefaultIssueClient()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	params := client.IssueListOptions{
+		Filter: "assigned",
+		State:  "all",
+		Since:  time.Now().AddDate(-1, 0, 0),
+	}
+	issues, err := issueClient.List(ctx, &params)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("number of assigned issues: %d\n", len(issues))
+	for _, issue := range issues {
+		fmt.Printf(
+			"#%d: %s (Created by: %s)\n",
+			issue.Number,
+			issue.Title,
+			issue.User.Login,
+		)
+	}
+}
